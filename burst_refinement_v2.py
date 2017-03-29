@@ -21,8 +21,8 @@ from numpy.linalg import norm
 
 from AffinityPropagation import *
 
-
-n_feature = 18
+polf_size = 7
+n_feature = 17+polf_size
 
 def get_features(seq):
     """
@@ -73,9 +73,6 @@ def get_features(seq):
     # d-value between positive and negative first-order derivative
     tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(end)]
     features['d_pfod_nfod'] = tmp_l.count(1) - tmp_l.count(0)
-    # polf
-    polf = PolynomialFeatures(7)
-    features['polf'] = polf.fit_transform(seq)
 
     return features.values()
 
@@ -108,13 +105,20 @@ def get_features_by_history(seq, has_burst):
     return features.values()
 
 
+def get_polf_features(seq):
+    # polf transform
+    polf = PolynomialFeatures(polf_size)
+    rst = polf.fit_transform(seq)
+    return rst
+
+
 def prepare_prediction_input(seqs, features):
     i = 0
     n_X = len(seqs)
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f], dtype=float)
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq)
+        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         i += 1
     return X
@@ -126,7 +130,7 @@ def prepare_period_prediction_input(seqs, peaks, features):
     X = np.empty([n_X, n_f+1], dtype=float)
     i = 0
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq)
+        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+1] = [peaks[i]]
         i += 1
@@ -140,7 +144,7 @@ def prepare_end_value_prediction_input(seqs, periods, st_values, peaks, features
     X = np.empty([n_X, n_f+3], dtype=float)
     i = 0
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq)
+        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+3] = [periods[i], st_values[i], peaks[i]]
         i += 1

@@ -8,10 +8,12 @@ import numpy as np
 import pandas
 import math
 import sys
+import os
 import time
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
+from sklearn.externals import joblib
 
 from scipy.signal import argrelextrema
 
@@ -66,88 +68,106 @@ if __name__ == "__main__":
     lstm_model = build_model(seq_len)
     lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
 
-    # build clf model
-    c_X, c_y = prepare_svm_input_v2(t_data_c[0], t_data_c[1], t_data_c[2], t_data_c[3])
-    clf1 = build_svm_model(c_X, c_y)
-    clf2 = build_svm_model(c_X, c_y, "linearsvc")
+    # if model already be trained and selected, use it!
+    if os.path.exists("model/clf.pkl") and \
+       os.path.exists("model/v_pdt.pkl") and \
+       os.path.exists("model/e_pdt.pkl") and \
+       os.path.exists("model/t_pdt.pkl"):
+        clf = joblib.load('model/clf.pkl') 
+        v_pdt = joblib.load('model/v_pdt.pkl')
+        t_pdt = joblib.load('model/t_pdt.pkl')
+        e_pdt = joblib.load('model/e_pdt.pkl')
 
-    # build peak value pred model
-    v_X = prepare_prediction_input(t_data_p_v[0], F_train)
-    v_pdt1 = build_prediction_model(v_X, t_data_p_v[1])
-    # v_pdt2 = build_prediction_model(v_X, t_data_p_v[1], "svr") #cost too much time
-    v_pdt3 = build_prediction_model(v_X, t_data_p_v[1], "linear")
-    v_pdt4 = build_prediction_model(v_X, t_data_p_v[1], "bayes")
+    else:
+        # build clf model
+        c_X, c_y = prepare_svm_input_v2(t_data_c[0], t_data_c[1], t_data_c[2], t_data_c[3])
+        clf1 = build_svm_model(c_X, c_y)
+        clf2 = build_svm_model(c_X, c_y, "linearsvc")
 
-    # build period pred model
-    t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1], F_train)
-    t_pdt1 = build_prediction_model(t_X, t_data_p_t[2],)
-    # t_pdt2 = build_prediction_model(t_X, t_data_p_t[2], "svr")
-    t_pdt3 = build_prediction_model(t_X, t_data_p_t[2], "linear")
-    t_pdt4 = build_prediction_model(t_X, t_data_p_t[2], "bayes")
+        # build peak value pred model
+        v_X = prepare_prediction_input(t_data_p_v[0], F_train)
+        v_pdt1 = build_prediction_model(v_X, t_data_p_v[1])
+        # v_pdt2 = build_prediction_model(v_X, t_data_p_v[1], "svr") #cost too much time
+        v_pdt3 = build_prediction_model(v_X, t_data_p_v[1], "linear")
+        v_pdt4 = build_prediction_model(v_X, t_data_p_v[1], "bayes")
 
-    # build ed value pred model
-    e_X = prepare_end_value_prediction_input(t_data_e_v[0], 
-                                             t_data_e_v[1], 
-                                             t_data_e_v[2], 
-                                             t_data_e_v[3],
-                                             F_train)
-    e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[4])
-    # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
-    e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
-    e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
+        # build period pred model
+        t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1], F_train)
+        t_pdt1 = build_prediction_model(t_X, t_data_p_t[2],)
+        # t_pdt2 = build_prediction_model(t_X, t_data_p_t[2], "svr")
+        t_pdt3 = build_prediction_model(t_X, t_data_p_t[2], "linear")
+        t_pdt4 = build_prediction_model(t_X, t_data_p_t[2], "bayes")
 
-    # build cluster model
-    ap_model = build_refine_model(t_data_r)
+        # build ed value pred model
+        e_X = prepare_end_value_prediction_input(t_data_e_v[0], 
+                                                 t_data_e_v[1], 
+                                                 t_data_e_v[2], 
+                                                 t_data_e_v[3],
+                                                 F_train)
+        e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[4])
+        # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
+        e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
+        e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
 
-    # test score
-    # classifier score
-    print "test classifier"
-    dataset = get_samples_for_classfier(S_test, N_test, seq_len)
-    test_c_x, test_c_y = prepare_svm_input_v2(dataset[0], dataset[1], dataset[2], dataset[3])
-    score1 = []
-    score1.append(mean_squared_error(clf1.predict(test_c_x), test_c_y))
-    score1.append(mean_squared_error(clf2.predict(test_c_x), test_c_y))
-    print "clf svc/linearsvc score: ", score1
+        # build cluster model
+        ap_model = build_refine_model(t_data_r)
 
-    # peak value score
-    test_v = get_samples_for_predict_value(B_test, S_test, seq_len)
-    test_vx = prepare_prediction_input(test_v[0], F_test)
-    score2 = []
-    score2.append(mean_squared_error(v_pdt1.predict(test_vx), test_v[1]))
-    # score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[1]))
-    score2.append(mean_squared_error(v_pdt3.predict(test_vx), test_v[1]))
-    score2.append(mean_squared_error(v_pdt4.predict(test_vx), test_v[1]))
+        # test score
+        # classifier score
+        print "test classifier"
+        dataset = get_samples_for_classfier(S_test, N_test, seq_len)
+        test_c_x, test_c_y = prepare_svm_input_v2(dataset[0], dataset[1], dataset[2], dataset[3])
+        score1 = []
+        score1.append(mean_squared_error(clf1.predict(test_c_x), test_c_y))
+        score1.append(mean_squared_error(clf2.predict(test_c_x), test_c_y))
+        print "clf svc/linearsvc score: ", score1
 
-    # period score
-    test_t = get_samples_for_predict_period(B_test, S_test, seq_len)
-    test_tx = prepare_period_prediction_input(test_t[0], test_t[1], F_test)
-    score3 = []
-    score3.append(mean_squared_error(t_pdt1.predict(test_tx), test_t[2]))
-    # score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[2]))
-    score3.append(mean_squared_error(t_pdt3.predict(test_tx), test_t[2]))
-    score3.append(mean_squared_error(t_pdt4.predict(test_tx), test_t[2]))
+        # peak value score
+        test_v = get_samples_for_predict_value(B_test, S_test, seq_len)
+        test_vx = prepare_prediction_input(test_v[0], F_test)
+        score2 = []
+        score2.append(mean_squared_error(v_pdt1.predict(test_vx), test_v[1]))
+        # score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[1]))
+        score2.append(mean_squared_error(v_pdt3.predict(test_vx), test_v[1]))
+        score2.append(mean_squared_error(v_pdt4.predict(test_vx), test_v[1]))
 
-    # end value score
-    test_e = get_samples_for_predict_end_value(B_test, S_test, seq_len)
-    test_ex = prepare_end_value_prediction_input(test_e[0], 
-                                                 test_e[1], 
-                                                 test_e[2], 
-                                                 test_e[3],
-                                                 F_test)
-    score4 = []
-    score4.append(mean_squared_error(e_pdt1.predict(test_ex), test_e[4]))
-    # score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[4]))
-    score4.append(mean_squared_error(e_pdt3.predict(test_ex), test_e[4]))
-    score4.append(mean_squared_error(e_pdt4.predict(test_ex), test_e[4]))
+        # period score
+        test_t = get_samples_for_predict_period(B_test, S_test, seq_len)
+        test_tx = prepare_period_prediction_input(test_t[0], test_t[1], F_test)
+        score3 = []
+        score3.append(mean_squared_error(t_pdt1.predict(test_tx), test_t[2]))
+        # score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[2]))
+        score3.append(mean_squared_error(t_pdt3.predict(test_tx), test_t[2]))
+        score3.append(mean_squared_error(t_pdt4.predict(test_tx), test_t[2]))
 
-    print "predict peak, period, end value score: ", score2, score3, score4    
+        # end value score
+        test_e = get_samples_for_predict_end_value(B_test, S_test, seq_len)
+        test_ex = prepare_end_value_prediction_input(test_e[0], 
+                                                     test_e[1], 
+                                                     test_e[2], 
+                                                     test_e[3],
+                                                     F_test)
+        score4 = []
+        score4.append(mean_squared_error(e_pdt1.predict(test_ex), test_e[4]))
+        # score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[4]))
+        score4.append(mean_squared_error(e_pdt3.predict(test_ex), test_e[4]))
+        score4.append(mean_squared_error(e_pdt4.predict(test_ex), test_e[4]))
 
-    scores = [score1, score2, score3, score4]
+        print "predict peak, period, end value score: ", score2, score3, score4    
 
-    selected_ids = [np.argmax(score) for score in scores]
-    v_pdt = globals()['v_pdt' + str(selected_ids[0] + 1)]
-    t_pdt = globals()['t_pdt' + str(selected_ids[1] + 1)]
-    e_pdt = globals()['e_pdt' + str(selected_ids[2] + 1)]
+        scores = [score1, score2, score3, score4]
+
+        selected_ids = [np.argmax(score) for score in scores]
+        clf = globals()['clf' + str(selected_ids[0] + 1)]
+        v_pdt = globals()['v_pdt' + str(selected_ids[1] + 1)]
+        t_pdt = globals()['t_pdt' + str(selected_ids[2] + 1)]
+        e_pdt = globals()['e_pdt' + str(selected_ids[3] + 1)]
+
+    # save models
+    joblib.dump(clf, 'model/clf.pkl')
+    joblib.dump(v_pdt, 'model/v_pdt.pkl')
+    joblib.dump(t_pdt, 'model/t_pdt.pkl')
+    joblib.dump(e_pdt, 'model/e_pdt.pkl')
 
     # make predictions
     lstm_predictions = []
@@ -178,10 +198,10 @@ if __name__ == "__main__":
         print "ed_value, pred_ed_value: ", series[-1], ed_value
         new_seq, st, ed, last_p, start = reshape_orginal_seq(seq, period)
 
-        reshaped_rst = knn_prediction(ap_model, t_data_r, new_seq, period, peak, ed_value, st, ed)[0]
-        new_burst = stretch_burst(reshaped_rst, period, seq[0])
-        if new_burst is None:
+        reshaped_rst = knn_prediction(ap_model, t_data_r, new_seq, period, peak, ed_value, st, ed)
+        if reshaped_rst is None:
             continue
+        new_burst = stretch_burst(reshaped_rst[0], period, seq[0])
 
         if period > ori_p:
             our_pred = new_burst[seq_len:ori_p]
