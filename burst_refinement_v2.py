@@ -22,7 +22,7 @@ from numpy.linalg import norm
 from AffinityPropagation import *
 
 polf_size = 7
-n_feature = 17+polf_size
+n_feature = 17
 
 def get_features(seq):
     """
@@ -118,7 +118,7 @@ def prepare_prediction_input(seqs, features):
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f], dtype=float)
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
+        X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq) #here have some error
         X[i,n_feature:n_f] = features[i]
         i += 1
     return X
@@ -130,7 +130,7 @@ def prepare_period_prediction_input(seqs, peaks, features):
     X = np.empty([n_X, n_f+1], dtype=float)
     i = 0
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
+        X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+1] = [peaks[i]]
         i += 1
@@ -144,7 +144,7 @@ def prepare_end_value_prediction_input(seqs, periods, st_values, peaks, features
     X = np.empty([n_X, n_f+3], dtype=float)
     i = 0
     for seq in seqs:
-        X[i,0:n_feature] = get_features(seq) + get_polf_features(seq)
+        X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+3] = [periods[i], st_values[i], peaks[i]]
         i += 1
