@@ -74,14 +74,14 @@ if __name__ == "__main__":
     # build peak value pred model
     v_X = prepare_prediction_input(t_data_p_v[0])
     v_pdt1 = build_prediction_model(v_X, t_data_p_v[1])
-    v_pdt2 = build_prediction_model(v_X, t_data_p_v[1], "svr")
+    # v_pdt2 = build_prediction_model(v_X, t_data_p_v[1], "svr")
     v_pdt3 = build_prediction_model(v_X, t_data_p_v[1], "linear")
     v_pdt4 = build_prediction_model(v_X, t_data_p_v[1], "bayes")
 
     # build period pred model
     t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1])
     t_pdt1 = build_prediction_model(t_X, t_data_p_t[2],)
-    t_pdt2 = build_prediction_model(t_X, t_data_p_t[2], "svr")
+    # t_pdt2 = build_prediction_model(t_X, t_data_p_t[2], "svr")
     t_pdt3 = build_prediction_model(t_X, t_data_p_t[2], "linear")
     t_pdt4 = build_prediction_model(t_X, t_data_p_t[2], "bayes")
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
                                              t_data_e_v[2], 
                                              t_data_e_v[3])
     e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[4])
-    e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
+    # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
     e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
     e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     test_vx = prepare_prediction_input(test_v[0])
     score2 = []
     score2.append(v_pdt1.score(test_vx, test_v[1]))
-    score2.append(v_pdt2.score(test_vx, test_v[1]))
+    # score2.append(v_pdt2.score(test_vx, test_v[1]))
     score2.append(v_pdt3.score(test_vx, test_v[1]))
     score2.append(v_pdt4.score(test_vx, test_v[1]))
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     test_tx = prepare_period_prediction_input(test_t[0], test_t[1])
     score3 = []
     score3.append(t_pdt1.score(test_tx, test_t[2]))
-    score3.append(t_pdt2.score(test_tx, test_t[2]))
+    # score3.append(t_pdt2.score(test_tx, test_t[2]))
     score3.append(t_pdt3.score(test_tx, test_t[2]))
     score3.append(t_pdt4.score(test_tx, test_t[2]))
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
                                                  test_e[3])
     score4 = []
     score4.append(e_pdt1.score(test_ex, test_e[4]))
-    score4.append(e_pdt2.score(test_ex, test_e[4]))
+    # score4.append(e_pdt2.score(test_ex, test_e[4]))
     score4.append(e_pdt3.score(test_ex, test_e[4]))
     score4.append(e_pdt4.score(test_ex, test_e[4]))
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     selected_ids = [np.argmax(score) for score in scores]
     v_pdt = globals()['v_pdt' + str(selected_ids[0] + 1)]
-    p_pdt = globals()['p_pdt' + str(selected_ids[1] + 1)]
+    t_pdt = globals()['t_pdt' + str(selected_ids[1] + 1)]
     e_pdt = globals()['e_pdt' + str(selected_ids[2] + 1)]
 
     # make predictions

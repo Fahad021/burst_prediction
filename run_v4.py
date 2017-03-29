@@ -146,7 +146,7 @@ if __name__ == "__main__":
 
     selected_ids = [np.argmax(score) for score in scores]
     v_pdt = globals()['v_pdt' + str(selected_ids[0] + 1)]
-    p_pdt = globals()['p_pdt' + str(selected_ids[1] + 1)]
+    t_pdt = globals()['t_pdt' + str(selected_ids[1] + 1)]
     e_pdt = globals()['e_pdt' + str(selected_ids[2] + 1)]
 
     # make predictions
