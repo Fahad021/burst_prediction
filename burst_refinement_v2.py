@@ -373,7 +373,7 @@ def knn_prediction(ap_model, X, new_seq, period, peak, ed_value, st_point, ed_po
 
     
     if indice == 0:
-        return np.zeros(X.shape[1]-1)
+        return None
 
     # find knn with period and shape
     cluster_centers_indices = ap_model.cluster_centers_indices_
@@ -419,7 +419,7 @@ def stretch_burst(seq, period, st_value):
     use burst period to stretch the burst
     """
     if period < 1 or type(seq) is not np.ndarray:
-        return np.zeros(len(seq))
+        return None
 
     new_seq = np.empty((period,), dtype=float)
     per = float(length) / period
