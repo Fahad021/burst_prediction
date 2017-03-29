@@ -75,11 +75,14 @@ if __name__ == "__main__":
     if os.path.exists("model/clf.pkl") and \
        os.path.exists("model/v_pdt.pkl") and \
        os.path.exists("model/e_pdt.pkl") and \
-       os.path.exists("model/t_pdt.pkl"):
+       os.path.exists("model/t_pdt.pkl") and \
+       os.path.exists("model/scores.npz":
         clf = joblib.load('model/clf.pkl') 
         v_pdt = joblib.load('model/v_pdt.pkl')
         t_pdt = joblib.load('model/t_pdt.pkl')
         e_pdt = joblib.load('model/e_pdt.pkl')
+        scores = np.load('model/scores.npz')["scores"]
+
     else:
         # build clf model
         c_X, c_y = prepare_svm_input(t_data_c[0], t_data_c[1])
@@ -160,11 +163,12 @@ if __name__ == "__main__":
         t_pdt = globals()['t_pdt' + str(selected_ids[2] + 1)]
         e_pdt = globals()['e_pdt' + str(selected_ids[3] + 1)]
 
-    # save models
+    # save models and scores
     joblib.dump(clf, 'model/clf.pkl')
     joblib.dump(v_pdt, 'model/v_pdt.pkl')
     joblib.dump(t_pdt, 'model/t_pdt.pkl')
     joblib.dump(e_pdt, 'model/e_pdt.pkl')
+    np.savez('model/scores.npz', scores=scores)
 
     # make predictions
     lstm_predictions = []
