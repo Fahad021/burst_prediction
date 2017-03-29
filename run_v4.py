@@ -61,9 +61,6 @@ if __name__ == "__main__":
     t_data_r = get_samples_for_refine(sys.argv[4], sys.argv[5], sys.argv[6], id_) # [seqs]
 
     lstm_data = get_samples_for_lstm(S_train, seq_len)
-    print lstm_data[0].shape
-    print lstm_data[1].shape
-    print lstm_data[0][1].shape
 
     # build lstm model
     lstm_model = build_model(seq_len)
@@ -72,7 +69,7 @@ if __name__ == "__main__":
     # build clf model
     c_X, c_y = prepare_svm_input_v2(t_data_c[0], t_data_c[1], t_data_c[2], t_data_c[3])
     clf1 = build_svm_model(c_X, c_y)
-    # clf2 = build_svm_model(c_X, c_y, "linearsvc")
+    clf2 = build_svm_model(c_X, c_y, "linearsvc")
 
     # build peak value pred model
     v_X = prepare_prediction_input(t_data_p_v[0], F_train)
@@ -109,7 +106,7 @@ if __name__ == "__main__":
     test_c_x, test_c_y = prepare_svm_input_v2(dataset[0], dataset[1], dataset[2], dataset[3])
     score1 = []
     score1.append(mean_squared_error(clf1.predict(test_c_x), test_c_y))
-    # score1.append(mean_squared_error(clf2.predict(test_c_x), test_c_y))
+    score1.append(mean_squared_error(clf2.predict(test_c_x), test_c_y))
     print "clf svc/linearsvc score: ", score1
 
     # peak value score

@@ -21,7 +21,7 @@ from numpy.linalg import norm
 from AffinityPropagation import *
 
 
-n_feature = 18
+n_feature = 19
 
 def get_features(seq):
     """
@@ -38,6 +38,10 @@ def get_features(seq):
     features['min'] = s_min
     # min value
     features['max'] = s_max
+    # max value
+    features['id_min'] = np.argmin(seq)
+    # min value
+    features['id_max'] = np.argmax(seq)
     # mean value
     features['mean_value'] = np.mean(seq)
     # std value

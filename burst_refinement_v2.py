@@ -113,6 +113,7 @@ def prepare_prediction_input(seqs, features):
     n_X = len(seqs)
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f], dtype=float)
+    print X.shape
     for seq in seqs:
         X[i] = get_features(seq) + features[i]
         i += 1
