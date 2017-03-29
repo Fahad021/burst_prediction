@@ -93,15 +93,15 @@ if __name__ == "__main__":
         v_X = prepare_prediction_input(t_data_p_v[0], t_data_p_v[1])
         v_pdt1 = build_prediction_model(v_X, t_data_p_v[2])
         # v_pdt2 = build_prediction_model(v_X, t_data_p_v[2], "svr") #cost too much time
-        v_pdt3 = build_prediction_model(v_X, t_data_p_v[2], "linear")
-        v_pdt4 = build_prediction_model(v_X, t_data_p_v[2], "bayes")
+        v_pdt2 = build_prediction_model(v_X, t_data_p_v[2], "linear")
+        v_pdt3 = build_prediction_model(v_X, t_data_p_v[2], "bayes")
 
         # build period pred model
         t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1], t_data_p_t[2])
         t_pdt1 = build_prediction_model(t_X, t_data_p_t[3],)
         # t_pdt2 = build_prediction_model(t_X, t_data_p_t[3], "svr")
-        t_pdt3 = build_prediction_model(t_X, t_data_p_t[3], "linear")
-        t_pdt4 = build_prediction_model(t_X, t_data_p_t[3], "bayes")
+        t_pdt2 = build_prediction_model(t_X, t_data_p_t[3], "linear")
+        t_pdt3 = build_prediction_model(t_X, t_data_p_t[3], "bayes")
 
         # build ed value pred model
         e_X = prepare_end_value_prediction_input(t_data_e_v[0], 
@@ -111,8 +111,8 @@ if __name__ == "__main__":
                                                  t_data_e_v[4])
         e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[5])
         # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[5], "svr")
-        e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[5], "linear")
-        e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[5], "bayes")
+        e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[5], "linear")
+        e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[5], "bayes")
 
         # test score
         # classifier score
@@ -130,8 +130,8 @@ if __name__ == "__main__":
         score2 = []
         score2.append(mean_squared_error(v_pdt1.predict(test_vx), test_v[2]))
         # score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[2]))
+        score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[2]))
         score2.append(mean_squared_error(v_pdt3.predict(test_vx), test_v[2]))
-        score2.append(mean_squared_error(v_pdt4.predict(test_vx), test_v[2]))
 
         # period score
         test_t = get_samples_for_predict_period(B_test, S_test, F_test, seq_len)
@@ -139,8 +139,8 @@ if __name__ == "__main__":
         score3 = []
         score3.append(mean_squared_error(t_pdt1.predict(test_tx), test_t[3]))
         # score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[3]))
+        score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[3]))
         score3.append(mean_squared_error(t_pdt3.predict(test_tx), test_t[3]))
-        score3.append(mean_squared_error(t_pdt4.predict(test_tx), test_t[3]))
 
         # end value score
         test_e = get_samples_for_predict_end_value(B_test, S_test, F_test, seq_len)
@@ -152,8 +152,8 @@ if __name__ == "__main__":
         score4 = []
         score4.append(mean_squared_error(e_pdt1.predict(test_ex), test_e[5]))
         # score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[5]))
+        score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[5]))
         score4.append(mean_squared_error(e_pdt3.predict(test_ex), test_e[5]))
-        score4.append(mean_squared_error(e_pdt4.predict(test_ex), test_e[5]))
 
         print "predict peak, period, end value score: ", score2, score3, score4    
 
