@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# user define
+*.out
+*.data
+*.txt
+*.csv
+*.npz
