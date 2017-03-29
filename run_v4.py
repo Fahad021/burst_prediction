@@ -125,7 +125,7 @@ if __name__ == "__main__":
         print "clf svc/linearsvc score: ", score1
 
         # peak value score
-        test_v = get_samples_for_predict_value(B_test, S_test, seq_len)
+        test_v = get_samples_for_predict_value(B_test, S_test, F_test, seq_len)
         test_vx = prepare_prediction_input(test_v[0], F_test)
         score2 = []
         score2.append(mean_squared_error(v_pdt1.predict(test_vx), test_v[1]))
@@ -134,7 +134,7 @@ if __name__ == "__main__":
         score2.append(mean_squared_error(v_pdt4.predict(test_vx), test_v[1]))
 
         # period score
-        test_t = get_samples_for_predict_period(B_test, S_test, seq_len)
+        test_t = get_samples_for_predict_period(B_test, S_test, F_test, seq_len)
         test_tx = prepare_period_prediction_input(test_t[0], test_t[1], F_test)
         score3 = []
         score3.append(mean_squared_error(t_pdt1.predict(test_tx), test_t[2]))
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         score3.append(mean_squared_error(t_pdt4.predict(test_tx), test_t[2]))
 
         # end value score
-        test_e = get_samples_for_predict_end_value(B_test, S_test, seq_len)
+        test_e = get_samples_for_predict_end_value(B_test, S_test, F_test, seq_len)
         test_ex = prepare_end_value_prediction_input(test_e[0], 
                                                      test_e[1], 
                                                      test_e[2], 
