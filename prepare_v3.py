@@ -137,7 +137,6 @@ def get_samples_for_classfier(series, n_series, features, seq_len):
     get samples of burst/non burst in the category of predicting series
     include rising and falling part, for timely detecting
     """
-    print "get samples for classfier"
     pos_samples = []
     neg_samples = []
     pos_features = []
@@ -174,7 +173,7 @@ def get_samples_for_classfier(series, n_series, features, seq_len):
              break
 
     print "pos_samples count, neg_samples count: ", len(pos_samples), len(neg_samples)
-    print "prepare clf time: ", int(time.time()) - start
+    print "prepare clf samples time: ", time.time() - start
     return pos_samples, neg_samples, pos_features, neg_features
 
 
@@ -246,7 +245,7 @@ def get_samples_for_predict_value(bursts, series, features, seq_len):
         if k >= size:
             break
 
-    return samples, new_features, values,
+    return samples, new_features, values
 
 
 def get_samples_for_predict_period(bursts, series, features, seq_len):
