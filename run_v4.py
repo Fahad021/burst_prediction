@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     id_ = 2
     seq_len = 30
-    epochs  = 1
+    epochs  = 100
     
     # load data
     print "load data"
