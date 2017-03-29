@@ -66,17 +66,23 @@ if __name__ == "__main__":
 
     # build lstm model
     lstm_model = build_model(seq_len)
-    lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
+    lstm_model.fit(lstm_data[0], lstm_data[1], epochs=epochs, batch_size=1, verbose=2)
+
+    # build cluster model
+    ap_model = build_refine_model(t_data_r)
 
     # if model already be trained and selected, use it!
     if os.path.exists("model/clf.pkl") and \
        os.path.exists("model/v_pdt.pkl") and \
        os.path.exists("model/e_pdt.pkl") and \
-       os.path.exists("model/t_pdt.pkl"):
+       os.path.exists("model/t_pdt.pkl") and \
+       os.path.exists("model/scores.npz"):
         clf = joblib.load('model/clf.pkl') 
         v_pdt = joblib.load('model/v_pdt.pkl')
         t_pdt = joblib.load('model/t_pdt.pkl')
         e_pdt = joblib.load('model/e_pdt.pkl')
+        scores = np.load('model/scores.npz')["scores"]
+
     else:
         # build clf model
         c_X, c_y = prepare_svm_input(t_data_c[0], t_data_c[1])
@@ -106,9 +112,6 @@ if __name__ == "__main__":
         # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
         e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
         e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
-
-        # build cluster model
-        ap_model = build_refine_model(t_data_r)
 
         # test score
         # classifier score
@@ -160,11 +163,12 @@ if __name__ == "__main__":
         t_pdt = globals()['t_pdt' + str(selected_ids[2] + 1)]
         e_pdt = globals()['e_pdt' + str(selected_ids[3] + 1)]
 
-    # save models
+    # save models and scores
     joblib.dump(clf, 'model/clf.pkl')
     joblib.dump(v_pdt, 'model/v_pdt.pkl')
     joblib.dump(t_pdt, 'model/t_pdt.pkl')
     joblib.dump(e_pdt, 'model/e_pdt.pkl')
+    np.savez('model/scores.npz', scores=scores)
 
     # make predictions
     lstm_predictions = []
@@ -214,7 +218,7 @@ if __name__ == "__main__":
 
     # invert predictions
     # dataset, new_pre = inverse_data(scaler, [dataset, [new_pre]])
-    print "overall msq: ", np.mean(msq, axis=1)
+    print "overall msq: ", np.mean(np.array(msq_set), axis=0)
 
     np.savez(sys.argv[7], our_pred=our_predictions, 
                           pred=lstm_predictions,
