@@ -68,6 +68,9 @@ if __name__ == "__main__":
     lstm_model = build_model(seq_len)
     lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
 
+    # build cluster model
+    ap_model = build_refine_model(t_data_r)
+
     # if model already be trained and selected, use it!
     if os.path.exists("model/clf.pkl") and \
        os.path.exists("model/v_pdt.pkl") and \
@@ -106,9 +109,6 @@ if __name__ == "__main__":
         # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
         e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
         e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
-
-        # build cluster model
-        ap_model = build_refine_model(t_data_r)
 
         # test score
         # classifier score
