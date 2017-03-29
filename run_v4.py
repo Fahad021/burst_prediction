@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     # invert predictions
     # dataset, new_pre = inverse_data(scaler, [dataset, [new_pre]])
-    print "overall msq: ", np.mean(msq, axis=1)
+    print "overall msq: ", np.mean(msq, axis=0)
 
     np.savez(sys.argv[7], our_pred=our_predictions, 
                           pred=lstm_predictions,
