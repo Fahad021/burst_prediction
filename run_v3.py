@@ -177,6 +177,10 @@ if __name__ == "__main__":
 
         reshaped_rst = knn_prediction(ap_model, t_data_r, new_seq, period, peak, ed_value, st, ed)[0]
         new_burst = stretch_burst(reshaped_rst, period, seq[0])
+
+        if new_burst is None:
+            continue
+
         if period > ori_p:
             our_pred = new_burst[seq_len:ori_p]
         else:
