@@ -217,16 +217,17 @@ def get_samples_for_classfier_v2(series, n_series, seq_len):
 
     print "pos_samples count, neg_samples count: ", len(pos_samples), len(neg_samples)
     
-    return pos_samples, neg_samples, new_features
+    return pos_samples, neg_samples
 
 
-def get_samples_for_predict_value(bursts, series, seq_len):
+def get_samples_for_predict_value(bursts, series, features, seq_len):
     """
     get seq and burst_value samples of burst in the category of predicting series
     """
     print "get samples for predict value"
     samples = []
     values = []
+    new_features = []
     k = 0
     for burst in bursts:
         if burst is None or len(burst) == 0:
@@ -236,6 +237,7 @@ def get_samples_for_predict_value(bursts, series, seq_len):
             # for i in xrange(N, len(series[k])+N-seq_len):
             for i in xrange(0, len(series[k])-seq_len):
                 samples.append(series[k][i:i+seq_len])
+                new_features.append(features[k])
                 values.append(item[3])
             k += 1
             if k >= size:
@@ -243,10 +245,10 @@ def get_samples_for_predict_value(bursts, series, seq_len):
         if k >= size:
             break
 
-    return samples, values
+    return samples, new_features, values,
 
 
-def get_samples_for_predict_period(bursts, series, seq_len):
+def get_samples_for_predict_period(bursts, series, features, seq_len):
     """
     get seq and period samples of burst in the category of predicting series
     """
@@ -254,6 +256,7 @@ def get_samples_for_predict_period(bursts, series, seq_len):
     samples = []
     periods = []
     peaks = []
+    new_features = []
     k = 0
     for burst in bursts:
         if burst is None or len(burst) == 0:
@@ -264,6 +267,7 @@ def get_samples_for_predict_period(bursts, series, seq_len):
             for i in xrange(0, len(series[k])-seq_len):
                 samples.append(series[k][i:i+seq_len])
                 periods.append(item[1]-item[0])
+                new_features.append(features[k])
                 peaks.append(item[3])
             k += 1
             if k >= size:
@@ -271,7 +275,7 @@ def get_samples_for_predict_period(bursts, series, seq_len):
         if k >= size:
             break
 
-    return samples, peaks, periods
+    return samples, peaks, new_features, periods
 
 
 def get_samples_for_predict_end_value(bursts, series, seq_len):
@@ -284,6 +288,7 @@ def get_samples_for_predict_end_value(bursts, series, seq_len):
     periods = []
     st_values = []
     peaks = []
+    new_features = []
     k = 0
     for burst in bursts:
         if burst is None or len(burst) == 0:
@@ -297,13 +302,14 @@ def get_samples_for_predict_end_value(bursts, series, seq_len):
                 st_values.append(series[k][0])
                 peaks.append(item[3])
                 values.append(series[k][-1])
+                new_features.append(features[k])
             k += 1
             if k >= size:
                 break
         if k >= size:
             break
 
-    return samples, periods, st_values, peaks, values
+    return samples, periods, st_values, peaks, new_features, values
 
 
 def get_samples_for_refine(file1, file2, file3, pid):

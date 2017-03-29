@@ -85,29 +85,29 @@ if __name__ == "__main__":
         clf2 = build_svm_model(c_X, c_y, "linearsvc")
 
         # build peak value pred model
-        v_X = prepare_prediction_input(t_data_p_v[0], F_train)
-        v_pdt1 = build_prediction_model(v_X, t_data_p_v[1])
-        # v_pdt2 = build_prediction_model(v_X, t_data_p_v[1], "svr") #cost too much time
-        v_pdt3 = build_prediction_model(v_X, t_data_p_v[1], "linear")
-        v_pdt4 = build_prediction_model(v_X, t_data_p_v[1], "bayes")
+        v_X = prepare_prediction_input(t_data_p_v[0], t_data_p_v[1])
+        v_pdt1 = build_prediction_model(v_X, t_data_p_v[2])
+        # v_pdt2 = build_prediction_model(v_X, t_data_p_v[2], "svr") #cost too much time
+        v_pdt3 = build_prediction_model(v_X, t_data_p_v[2], "linear")
+        v_pdt4 = build_prediction_model(v_X, t_data_p_v[2], "bayes")
 
         # build period pred model
-        t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1], F_train)
-        t_pdt1 = build_prediction_model(t_X, t_data_p_t[2],)
-        # t_pdt2 = build_prediction_model(t_X, t_data_p_t[2], "svr")
-        t_pdt3 = build_prediction_model(t_X, t_data_p_t[2], "linear")
-        t_pdt4 = build_prediction_model(t_X, t_data_p_t[2], "bayes")
+        t_X = prepare_period_prediction_input(t_data_p_t[0], t_data_p_t[1], t_data_p_t[2])
+        t_pdt1 = build_prediction_model(t_X, t_data_p_t[3],)
+        # t_pdt2 = build_prediction_model(t_X, t_data_p_t[3], "svr")
+        t_pdt3 = build_prediction_model(t_X, t_data_p_t[3], "linear")
+        t_pdt4 = build_prediction_model(t_X, t_data_p_t[3], "bayes")
 
         # build ed value pred model
         e_X = prepare_end_value_prediction_input(t_data_e_v[0], 
                                                  t_data_e_v[1], 
                                                  t_data_e_v[2], 
                                                  t_data_e_v[3],
-                                                 F_train)
-        e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[4])
-        # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[4], "svr")
-        e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[4], "linear")
-        e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[4], "bayes")
+                                                 t_data_e_v[4])
+        e_pdt1 = build_end_value_prediction_model(e_X, t_data_e_v[5])
+        # e_pdt2 = build_end_value_prediction_model(e_X, t_data_e_v[5], "svr")
+        e_pdt3 = build_end_value_prediction_model(e_X, t_data_e_v[5], "linear")
+        e_pdt4 = build_end_value_prediction_model(e_X, t_data_e_v[5], "bayes")
 
         # build cluster model
         ap_model = build_refine_model(t_data_r)
