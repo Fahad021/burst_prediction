@@ -278,7 +278,7 @@ def get_samples_for_predict_period(bursts, series, features, seq_len):
     return samples, peaks, new_features, periods
 
 
-def get_samples_for_predict_end_value(bursts, series, seq_len):
+def get_samples_for_predict_end_value(bursts, series, features, seq_len):
     """
     get seq and burst_value samples of burst in the category of predicting series
     """

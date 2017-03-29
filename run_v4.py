@@ -56,9 +56,9 @@ if __name__ == "__main__":
 
     t_data_c = get_samples_for_classfier(S_train, N_train, features, seq_len) # [pos_samples, neg_samples]
 
-    t_data_p_v = get_samples_for_predict_value(B_train, S_train, seq_len) # [seqs, values]
-    t_data_p_t = get_samples_for_predict_period(B_train, S_train, seq_len) # [seqs, time_periods]
-    t_data_e_v = get_samples_for_predict_end_value(B_train, S_train, seq_len) # [seqs,periods,st_values,peaks,end_values]
+    t_data_p_v = get_samples_for_predict_value(B_train, S_train, F_train, seq_len) # [seqs, values]
+    t_data_p_t = get_samples_for_predict_period(B_train, S_train, F_train, seq_len) # [seqs, time_periods]
+    t_data_e_v = get_samples_for_predict_end_value(B_train, S_train, F_train, seq_len) # [seqs,periods,st_values,peaks,end_values]
 
     t_data_r = get_samples_for_refine(sys.argv[4], sys.argv[5], sys.argv[6], id_) # [seqs]
 
