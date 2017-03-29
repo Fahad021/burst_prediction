@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     # build lstm model
     lstm_model = build_model(seq_len)
-    lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
+    lstm_model.fit(lstm_data[0], lstm_data[1], epochs=epochs, batch_size=1, verbose=2)
 
     # build cluster model
     ap_model = build_refine_model(t_data_r)
@@ -76,7 +76,7 @@ if __name__ == "__main__":
        os.path.exists("model/v_pdt.pkl") and \
        os.path.exists("model/e_pdt.pkl") and \
        os.path.exists("model/t_pdt.pkl") and \
-       os.path.exists("model/scores.npz":
+       os.path.exists("model/scores.npz"):
         clf = joblib.load('model/clf.pkl') 
         v_pdt = joblib.load('model/v_pdt.pkl')
         t_pdt = joblib.load('model/t_pdt.pkl')

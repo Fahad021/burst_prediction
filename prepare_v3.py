@@ -142,6 +142,7 @@ def get_samples_for_classfier(series, n_series, features, seq_len):
     neg_samples = []
     pos_features = []
     neg_features = []
+    start = int(time.time())
 
     # get positive samples from burst series
     count_i = 0
@@ -173,7 +174,7 @@ def get_samples_for_classfier(series, n_series, features, seq_len):
              break
 
     print "pos_samples count, neg_samples count: ", len(pos_samples), len(neg_samples)
-    
+    print "prepare clf time: ", int(time.time()) - start
     return pos_samples, neg_samples, pos_features, neg_features
 
 

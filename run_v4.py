@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     id_ = 2
     seq_len = 30
-    epochs  = 100
+    epochs  = 1
     
     # load data
     print "load data"
@@ -54,7 +54,7 @@ if __name__ == "__main__":
              bursts_info, burst_series, non_burst_series, features, history)
     print "train/test size: ", len(S_train), len(S_test)
 
-    t_data_c = get_samples_for_classfier(S_train, N_train, features, seq_len) # [pos_samples, neg_samples]
+    t_data_c = get_samples_for_classfier(S_train, N_train, F_train, seq_len) # [pos_samples, neg_samples]
 
     t_data_p_v = get_samples_for_predict_value(B_train, S_train, F_train, seq_len) # [seqs, values]
     t_data_p_t = get_samples_for_predict_period(B_train, S_train, F_train, seq_len) # [seqs, time_periods]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     # build lstm model
     lstm_model = build_model(seq_len)
-    lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
+    lstm_model.fit(lstm_data[0], lstm_data[1], epochs=epochs, batch_size=1, verbose=2)
 
     # build cluster model
     ap_model = build_refine_model(t_data_r)
@@ -76,7 +76,7 @@ if __name__ == "__main__":
        os.path.exists("model/v_pdt.pkl") and \
        os.path.exists("model/e_pdt.pkl") and \
        os.path.exists("model/t_pdt.pkl") and \
-       os.path.exists("model/scores.npz":
+       os.path.exists("model/scores.npz"):
         clf = joblib.load('model/clf.pkl') 
         v_pdt = joblib.load('model/v_pdt.pkl')
         t_pdt = joblib.load('model/t_pdt.pkl')
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         # test score
         # classifier score
         print "test classifier"
-        dataset = get_samples_for_classfier(S_test, N_test, seq_len)
+        dataset = get_samples_for_classfier(S_test, N_test, F_test, seq_len)
         test_c_x, test_c_y = prepare_svm_input_v2(dataset[0], dataset[1], dataset[2], dataset[3])
         score1 = []
         score1.append(mean_squared_error(clf1.predict(test_c_x), test_c_y))
