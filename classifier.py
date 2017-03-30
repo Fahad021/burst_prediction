@@ -119,7 +119,7 @@ def prepare_svm_input_v2(pos_samples, neg_samples, pos_features, neg_features):
     return X, y
 
 
-def build_svm_model(X, y, kernel="svc"):
+def build_svm_model(X, y, kernel="rbf"):
     # here not consider unbalanced problems
     # we can get same number of pos samples and neg samples
     start = int(time.time())
