@@ -14,6 +14,7 @@ import time
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 from sklearn.externals import joblib
+from sklearn.feature_selection import SelectFromModel
 
 from scipy.signal import argrelextrema
 
