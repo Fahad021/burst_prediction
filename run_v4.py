@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     id_ = 2
     seq_len = 30
-    epochs  = 1
+    epochs  = 100
     
     # load data
     print "load data"
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     # build lstm model
     lstm_model = build_model(seq_len)
-    lstm_model.fit(lstm_data[0], lstm_data[1], epochs=epochs, batch_size=1, verbose=2)
+    lstm_model.fit(lstm_data[0], lstm_data[1], nb_epoch=epochs, batch_size=1, verbose=2)
 
     # build cluster model
     ap_model = build_refine_model(t_data_r)
