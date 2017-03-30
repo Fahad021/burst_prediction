@@ -76,7 +76,7 @@ def get_features(seq):
 
     return features.values()
 
-
+n_h_features = 10
 def get_features_by_history(seq, has_burst):
     """
     use at most past two window size series data
@@ -207,7 +207,10 @@ def build_refine_model(seqs):
 
 def predict_burst_value(model, seq, history):
     features = get_features(seq)
-    features += get_features_by_history(history[1:], history[0])
+    if len(history) <= 0:
+        features += [0.0] * n_h_features
+    else:
+        features += get_features_by_history(history[1:], history[0])
 
     start = int(time.time())
     rst = model.predict(np.array(features).reshape(1,-1))
@@ -225,7 +228,10 @@ def predict_burst_period(model, peak, seq, history):
     return value: int
     """
     features = get_features(seq)
-    features += get_features_by_history(history[1:], history[0])
+    if len(history) <= 0:
+        features += [0.0] * n_h_features
+    else:
+        features += get_features_by_history(history[1:], history[0])
     features += [peak]
 
     start = int(time.time())
@@ -240,7 +246,10 @@ def predict_burst_period(model, peak, seq, history):
 
 def predict_end_value(model, seq, period, peak, history):
     features = get_features(seq)
-    features += get_features_by_history(history[1:], history[0])
+    if len(history) <= 0:
+        features += [0.0] * n_h_features
+    else:
+        features += get_features_by_history(history[1:], history[0])
     features += [period, seq[0], peak]
 
     start = int(time.time())
