@@ -14,6 +14,7 @@ import time
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 from sklearn.externals import joblib
+from sklearn.feature_selection import SelectFromModel
 
 from scipy.signal import argrelextrema
 
@@ -40,9 +41,7 @@ if __name__ == "__main__":
     id_ = 2
     seq_len = 30
     epochs  = 100
-    
-    option2 = ["gaussian", "neighbor", "decision", "adaboost", "randomforest"]
-    option1 = ["linear","rbf", "poly", "sigmoid"]
+
 
     # load data
     print "load data"
@@ -61,30 +60,12 @@ if __name__ == "__main__":
 
     # build clf model
     c_X, c_y = prepare_svm_input(t_data_c[0], t_data_c[1])
-    clfs = []
-    for item in option1:
-        clf = build_svm_model(c_X, c_y, item)
-        clfs.append(clf)
-    for item in option2:
-        clf = build_clf_model(c_X, c_y, item)
-        clfs.append(clf)
+    clf = svm.LinearSVC(C=0.01, penalty="l1", dual=False).fit(c_X, c_y)
+    model = SelectFromModel(clf, prefit=True)
+    features = model.get_support()
+    print features
 
-    # test score
-    # classifier score
-    print "test classifier"
-    dataset = get_samples_for_classfier_v2(S_test, N_test, seq_len)
-    test_c_x, test_c_y = prepare_svm_input(dataset[0], dataset[1])
-    score1 = []
-    for clf in clfs:
-        score1.append(clf.score(test_c_x, test_c_y))
-    print "clf scores: ", score1
+    # save model
+    joblib.dump(model, 'model/select_feature.pkl')
 
-    scores = [score1]
-
-    selected_ids = [np.argmax(score) for score in scores]
-    clf = globals()['clf' + str(selected_ids[0] + 1)]
-
-
-    # save models and scores
-    joblib.dump(clf, 'model/best_clf.pkl')
 
