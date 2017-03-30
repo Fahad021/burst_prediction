@@ -87,7 +87,7 @@ if __name__ == "__main__":
         # build clf model
         c_X, c_y = prepare_svm_input(t_data_c[0], t_data_c[1])
         clf1 = build_svm_model(c_X, c_y)
-        clf2 = build_svm_model(c_X, c_y, "linearsvc")
+        clf2 = build_svm_model(c_X, c_y, "linear")
 
         # build peak value pred model
         v_X = prepare_prediction_input(t_data_p_v[0])

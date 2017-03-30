@@ -8,6 +8,11 @@ import time
 
 from scipy.signal import argrelextrema
 from sklearn import svm
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 
 n_feature = 19
@@ -114,20 +119,37 @@ def prepare_svm_input_v2(pos_samples, neg_samples, pos_features, neg_features):
     return X, y
 
 
-def build_svm_model(X, y, model="svc"):
+def build_svm_model(X, y, kernel="svc"):
     # here not consider unbalanced problems
     # we can get same number of pos samples and neg samples
     start = int(time.time())
-    if model == "linearsvc":
-        clf = svm.LinearSVC()
-    else:
-        clf = svm.SVC() # classify
+    clf = svm.SVC(kernel=kernel) # classify
     
     clf.fit(X,y)
     print "Classifier Fit Time : ", time.time() - start
     
     return clf
 
+
+def build_clf_model(X, y, model="gaussian"):
+    # here not consider unbalanced problems
+    # we can get same number of pos samples and neg samples
+    start = int(time.time())
+    if model == "neighbor":
+        clf = KNeighborsClassifier(2)
+    elif model == "decision":
+        clf = DecisionTreeClassifier(max_depth=10)
+    elif model == "adaboost":
+        clf = AdaBoostClassifier()
+    elif model == "randomforest":
+        clf = RandomForestClassifier(max_depth=10, n_estimators=10)
+    else:
+        clf = GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True) # classify
+
+    clf.fit(X,y)
+    print "Classifier Fit Time : ", time.time() - start
+    
+    return clf
 
 def classfy_burst(clf, seq, seq_len):
     length = len(seq)
