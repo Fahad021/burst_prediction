@@ -41,7 +41,7 @@ if __name__ == "__main__":
     seq_len = 30
     epochs  = 100
     
-    option2 = ["gaussian", "neighbor", "decision", "adaboost", "randomforest"]
+    option2 = ["neighbor", "decision", "adaboost", "randomforest"]
     option1 = ["linear","rbf", "poly", "sigmoid"]
 
     # load data
