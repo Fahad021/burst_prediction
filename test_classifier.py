@@ -78,13 +78,3 @@ if __name__ == "__main__":
     for clf in clfs:
         score1.append(clf.score(test_c_x, test_c_y))
     print "clf scores: ", score1
-
-    scores = [score1]
-
-    selected_ids = [np.argmax(score) for score in scores]
-    clf = globals()['clf' + str(selected_ids[0] + 1)]
-
-
-    # save models and scores
-    joblib.dump(clf, 'model/best_clf.pkl')
-
