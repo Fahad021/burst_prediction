@@ -173,6 +173,7 @@ if __name__ == "__main__":
     # make predictions
     lstm_predictions = []
     our_predictions = []
+    new_S = []
     msq_set = [] # mean square errors, (lstm_error, our_error) pair
     for series in S_test:
         ori_p = len(series)
@@ -186,7 +187,6 @@ if __name__ == "__main__":
             lstm_pred[i] = lstm_model.predict(np.reshape(seq,(1,1,seq_len)))
             seq[0:seq_len-1] = seq[1:seq_len]
             seq[-1] = lstm_pred[i]
-        lstm_predictions.append(lstm_pred)
 
         # our prediction
         seq = series[0:seq_len] # reset seq
@@ -208,13 +208,16 @@ if __name__ == "__main__":
         else:
             our_pred = np.zeros(ori_p-seq_len)
             our_pred[:period-seq_len] = new_burst[seq_len:]
-        our_predictions.append(our_pred)
 
         msq = np.zeros(2)
         msq[0] = mean_squared_error(series[seq_len:], lstm_pred)
         msq[1] = mean_squared_error(series[seq_len:], our_pred)
         print "mean_squared_error: ", msq
         msq_set.append(msq)
+        lstm_predictions.append(lstm_pred)
+        our_predictions.append(our_pred)
+        new_S.append(series)
+
 
     # invert predictions
     # dataset, new_pre = inverse_data(scaler, [dataset, [new_pre]])
@@ -223,6 +226,6 @@ if __name__ == "__main__":
     np.savez(sys.argv[7], our_pred=our_predictions, 
                           pred=lstm_predictions,
                           msq=msq_set,
-                          test_set=S_test,
+                          series=new_S,
                           scores=scores,
                           seq_len=seq_len)

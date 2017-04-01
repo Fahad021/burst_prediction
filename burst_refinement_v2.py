@@ -22,7 +22,7 @@ from numpy.linalg import norm
 from AffinityPropagation import *
 
 polf_size = 7
-n_feature = 17
+n_feature = 15
 
 def get_features(seq):
     """
@@ -66,10 +66,10 @@ def get_features(seq):
     # minimum value of the first-order derivative
     features['min_fod'] = min(tmp_l)
     # maximum point of the first-order derivative
-    tmp_l = [seq[i+1] - seq[i] for i in range(end)]
-    features['max_fod_point'] = np.argmax(tmp_l)
+    # tmp_l = [seq[i+1] - seq[i] for i in range(end)]
+    # features['max_fod_point'] = np.argmax(tmp_l)
     # minimum point of the first-order derivative
-    features['min_fod_point'] = np.argmin(tmp_l)
+    # features['min_fod_point'] = np.argmin(tmp_l)
     # d-value between positive and negative first-order derivative
     tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(end)]
     features['d_pfod_nfod'] = tmp_l.count(1) - tmp_l.count(0)
