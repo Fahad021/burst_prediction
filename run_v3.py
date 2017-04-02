@@ -127,19 +127,19 @@ if __name__ == "__main__":
         test_v = get_samples_for_predict_value(B_test, S_test, seq_len)
         test_vx = prepare_prediction_input(test_v[0])
         score2 = []
-        score2.append(v_pdt1.score(test_vx, test_v[1]))
-        # score2.append(v_pdt2.score(test_vx, test_v[1]))
-        score2.append(v_pdt2.score(test_vx, test_v[1]))
-        score2.append(v_pdt3.score(test_vx, test_v[1]))
+        score2.append(mean_squared_error(v_pdt1.predict(test_vx), test_v[1]))
+        # score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[1]))
+        score2.append(mean_squared_error(v_pdt2.predict(test_vx), test_v[1]))
+        score2.append(mean_squared_error(v_pdt3.predict(test_vx), test_v[1]))
 
         # period score
         test_t = get_samples_for_predict_period(B_test, S_test, seq_len)
         test_tx = prepare_period_prediction_input(test_t[0], test_t[1])
         score3 = []
-        score3.append(t_pdt1.score(test_tx, test_t[2]))
-        # score3.append(t_pdt2.score(test_tx, test_t[2]))
-        score3.append(t_pdt2.score(test_tx, test_t[2]))
-        score3.append(t_pdt3.score(test_tx, test_t[2]))
+        score3.append(mean_squared_error(t_pdt1.predict(test_tx), test_t[2]))
+        # score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[2]))
+        score3.append(mean_squared_error(t_pdt2.predict(test_tx), test_t[2]))
+        score3.append(mean_squared_error(t_pdt3.predict(test_tx), test_t[2]))
 
         # end value score
         test_e = get_samples_for_predict_end_value(B_test, S_test, seq_len)
@@ -148,10 +148,10 @@ if __name__ == "__main__":
                                                      test_e[2], 
                                                      test_e[3])
         score4 = []
-        score4.append(e_pdt1.score(test_ex, test_e[4]))
-        # score4.append(e_pdt2.score(test_ex, test_e[4]))
-        score4.append(e_pdt2.score(test_ex, test_e[4]))
-        score4.append(e_pdt3.score(test_ex, test_e[4]))
+        score4.append(mean_squared_error(e_pdt1.predict(test_ex), test_e[4]))
+        # score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[4]))
+        score4.append(mean_squared_error(e_pdt2.predict(test_ex), test_e[4]))
+        score4.append(mean_squared_error(e_pdt3.predict(test_ex), test_e[4]))
 
         print "predict period, peak, end value score: ", score2, score3, score4    
 
