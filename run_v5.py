@@ -20,7 +20,7 @@ from scipy.signal import argrelextrema
 from lstm import *
 from classifier import *
 from burst_refinement_v3 import *
-from prepare_v4 import *
+from prepare_v2 import *
 
 
 def get_dates(filename):
