@@ -198,7 +198,7 @@ def build_refine_model(seqs):
     X = np.delete(X, [0], axis=1) # delete 'burst len'
     start = int(time.time())
     af = AffinityPropagation(affinity="euclidean",
-                             damping=.9).fit(X) # euclidean distance
+                             damping=.8).fit(X) # euclidean distance
     # af = AffinityPropagation(affinity='dtw').fit(X) # dtw distance
     print "AP Cluster Model Fit Time : ", time.time() - start
 
