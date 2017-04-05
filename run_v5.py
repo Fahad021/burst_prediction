@@ -47,6 +47,9 @@ if __name__ == "__main__":
 
     final_msq = []
     final_score = []
+    alpha = 1.5 # peak
+    beta = 10 # period
+    delta = 0.8 # end_value
     for fid, id_ in enumerate(pid_list):
         seq_len = 30
         epochs  = 100
@@ -80,6 +83,11 @@ if __name__ == "__main__":
 
         # build cluster model
         ap_model = build_refine_model(t_data_r)
+
+        # avg peak and period and ed value
+        avg_peak = np.mean(t_data_p_v[-1])
+        avg_period = np.mean(t_data_p_t[-1])
+        avg_ed = np.mean(t_data_e_v[-1])
 
         # if model already be trained and selected, use it!
         if not os.path.exists("model/id%d" % fid):
@@ -205,10 +213,18 @@ if __name__ == "__main__":
             # our prediction
             seq = series[0:seq_len] # reset seq
             peak = predict_burst_value(v_pdt, seq)
+            if peak <= 0.0 or abs(avg_peak - peak) > 4*alpha:
+                peak = avg_peak
             print "peak, pred_peak: ", np.amax(series), peak
             period = predict_burst_period(t_pdt, peak, seq)
+            if period <= 0.0 or abs(avg_period - period) > 4*beta:
+                period = avg_period
             print "period, pred_period: ", ori_p, period
             ed_value = predict_end_value(e_pdt, seq, period, peak)
+            if ed_value <= -seq[0]:
+                ed_value = seq[0]
+            elif abs(avg_ed - ed_value) > 4*delta:
+                ed_value = avg_ed
             print "ed_value, pred_ed_value: ", series[-1], ed_value
             new_seq, st, ed, last_p, start = reshape_orginal_seq(seq, period)
 
