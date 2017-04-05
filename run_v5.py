@@ -10,6 +10,7 @@ import math
 import sys
 import os
 import time
+import multiprocessing
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
@@ -264,8 +265,8 @@ if __name__ == "__main__":
     beta = 10 # period
     delta = 0.8 # end_value
 
-    pool = multiprocessing.Pool()
-    cpus = multiprocessing.cpu_count() / 2
+    numbers = min(multiprocessing.cpu_count()/4, 6)
+    pool = multiprocessing.Pool(numbers)
     for fid, id_ in enumerate(pid_list):
         rst = pool.apply_async(task, args=(sys.argv, id_, fid, alpha, beta, delta,))
         rsts.append(rst)
