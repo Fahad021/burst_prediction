@@ -20,8 +20,10 @@ beta = 10 # period
 delta = 0.8 # end_value
 
 for i, id_ in enumerate(pid_list):
+    print "task %d start" % i
     rst = task(sys.argv, id_, i, alpha, beta, delta)
     rsts.append(rst)
+    print "task %d end" % i
 
 for rst in rsts:
     final_score.append([max(l) for l in rst[0]])
