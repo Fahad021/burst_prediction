@@ -40,9 +40,8 @@ pid_list = [118, 6921, 372, 661, 62, 107, 42, 76, 27,
             84, 173, 148, 98, 33, 79, 132, 20482, 119, 28, 
             2923, 377, 161, 6913, 9] # 64, threshold:100
 
-def task(argv, id_, fid, alpha, beta, delta):
+def task(argv, id_, fid, alpha, beta, delta, epochs=100):
     seq_len = 30
-    epochs  = 100
     
     # load data
     print fid, "load data"
@@ -78,6 +77,7 @@ def task(argv, id_, fid, alpha, beta, delta):
     avg_peak = np.mean(t_data_p_v[-1])
     avg_period = np.mean(t_data_p_t[-1])
     avg_ed = np.mean(t_data_e_v[-1])
+    print fid, "avg: ", avg_peak, avg_period, avg_ed
 
     # if model already be trained and selected, use it!
     if not os.path.exists("model/id%d" % fid):
@@ -174,6 +174,7 @@ def task(argv, id_, fid, alpha, beta, delta):
         e_pdt = globals()['e_pdt' + str(selected_ids[3] + 1)]
 
     # save models and scores
+    print "save model"
     joblib.dump(clf, 'model/id' + str(fid) + '/clf.pkl')
     joblib.dump(v_pdt, 'model/id' + str(fid) + '/v_pdt.pkl')
     joblib.dump(t_pdt, 'model/id' + str(fid) + '/t_pdt.pkl')
