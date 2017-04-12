@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from run_v5.py import *
+from run_v5 import *
 
 pid_list = [118, 6921, 372, 661, 62, 107, 42, 76, 27, 
             24993, 60, 263, 102, 365, 13, 6949, 75, 46, 

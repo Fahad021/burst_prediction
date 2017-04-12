@@ -15,6 +15,7 @@ from sklearn import svm
 from sklearn import linear_model
 from scipy import stats 
 from sklearn import cluster
+from sklearn import tree
 from scipy.signal import argrelextrema
 from numpy.linalg import norm
 
@@ -100,16 +101,20 @@ def prepare_period_prediction_input(seqs, peaks):
 
     return X
 
-
+n_size = 10000
 def build_prediction_model(X, y, type_="linearsvr"):
     start = int(time.time())
 
     if type_ == "svr":
         model = svm.SVR() # SVR regression
+        X = X[:n_size,:]
+        y = y[:n_size]
     elif type_ == "linear":
         model = linear_model.LinearRegression() # linear regression
     elif type_ == "bayes":
         model = linear_model.BayesianRidge() # Bayes
+    elif type_ == "cart":
+        model = tree.DecisionTreeRegressor() # CART
     else:
         model = svm.LinearSVR() # LinearSVR regression
 
@@ -135,10 +140,14 @@ def build_end_value_prediction_model(X, y, type_="linearsvr"):
 
     if type_ == "svr":
         model = svm.SVR() # SVR regression
+        X = X[:n_size,:]
+        y = y[:n_size]
     elif type_ == "linear":
         model = linear_model.LinearRegression() # linear regression
     elif type_ == "bayes":
         model = linear_model.BayesianRidge() # Bayes
+    elif type_ == "cart":
+        model = tree.DecisionTreeRegressor() # CART
     else:
         model = svm.LinearSVR()
 

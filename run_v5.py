@@ -168,10 +168,10 @@ def task(argv, id_, fid, alpha, beta, delta, epochs=100):
         scores = [score1, score2, score3, score4]
 
         selected_ids = [np.argmax(score) for score in scores]
-        clf = globals()['clf' + str(selected_ids[0] + 1)]
-        v_pdt = globals()['v_pdt' + str(selected_ids[1] + 1)]
-        t_pdt = globals()['t_pdt' + str(selected_ids[2] + 1)]
-        e_pdt = globals()['e_pdt' + str(selected_ids[3] + 1)]
+        clf = locals()['clf' + str(selected_ids[0] + 1)]
+        v_pdt = locals()['v_pdt' + str(selected_ids[1] + 1)]
+        t_pdt = locals()['t_pdt' + str(selected_ids[2] + 1)]
+        e_pdt = locals()['e_pdt' + str(selected_ids[3] + 1)]
 
     # save models and scores
     print "save model"
@@ -266,10 +266,10 @@ if __name__ == "__main__":
     beta = 10 # period
     delta = 0.8 # end_value
 
-    numbers = min(multiprocessing.cpu_count()/4, 6)
+    numbers = min(multiprocessing.cpu_count()/4, 8)
     pool = multiprocessing.Pool(numbers)
     for fid, id_ in enumerate(pid_list):
-        rst = pool.apply_async(task, args=(sys.argv, id_, fid, alpha, beta, delta,))
+        rst = pool.apply_async(task, args=(sys.argv, id_, fid, alpha, beta, delta, 50))
         rsts.append(rst)
 
     pool.close()
@@ -280,4 +280,4 @@ if __name__ == "__main__":
         final_score.append([max(l) for l in rst[0]])
         final_msq.append(rst[1])
 
-    np.savez(argv[7], msq=final_msq, score=final_score)
+    np.savez(sys.argv[7], msq=final_msq, score=final_score)
