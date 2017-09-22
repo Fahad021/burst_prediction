@@ -6,6 +6,7 @@
 import numpy as np
 
 import pandas
+import csv
 import math
 import sys
 import os
@@ -99,10 +100,13 @@ def task(argv, id_, fid):
             y_pred = v_pdts[i].predict(test_vx)
             y = test_v[1]
             hr20 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.2])/float(len(y))
-            hr30 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.3])/float(len(y))
+            hr40 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.4])/float(len(y))
+            hr50 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.5])/float(len(y))
             score2.append(mean_squared_error(y_pred, test_v[1]))
             score2.append(mean_absolute_error(y_pred, test_v[1]))
-            score2.append([hr20, hr30])
+            score2.append(hr20)
+            score2.append(hr40)
+            score2.append(hr50)
 
         # period score
         test_t = get_samples_for_predict_period(B_test, S_test, seq_len)
@@ -112,10 +116,13 @@ def task(argv, id_, fid):
             y_pred = t_pdts[i].predict(test_tx)
             y = test_t[2]
             hr20 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.2])/float(len(y))
-            hr30 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.3])/float(len(y))
+            hr40 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.4])/float(len(y))
+            hr50 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.5])/float(len(y))
             score3.append(mean_squared_error(y_pred, test_t[2]))
             score3.append(mean_absolute_error(y_pred, test_t[2]))
-            score3.append([hr20, hr30])
+            score3.append(hr20)
+            score3.append(hr40)
+            score3.append(hr50) 
 
         # end value score
         test_e = get_samples_for_predict_end_value(B_test, S_test, seq_len)
@@ -128,10 +135,13 @@ def task(argv, id_, fid):
             y_pred = e_pdts[i].predict(test_ex)
             y = test_e[4]
             hr20 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.2])/float(len(y))
-            hr30 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.3])/float(len(y))
+            hr40 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.4])/float(len(y))
+            hr50 = len([k for k in range(len(y)) if abs(y_pred[k]-y[k])/float(y[k])<=0.5])/float(len(y))
             score4.append(mean_squared_error(y_pred, test_e[4]))
             score4.append(mean_absolute_error(y_pred, test_e[4]))
-            score4.append([hr20, hr30])
+            score4.append(hr20)
+            score4.append(hr40)
+            score4.append(hr50)
 
         print fid, "predict period, peak, end value score: ", score2, score3, score4    
 
@@ -151,5 +161,9 @@ if __name__ == "__main__":
     for fid, id_ in enumerate(pid_list):
         scores = task(sys.argv, id_, fid)
         rsts.append(scores)
+
+    w = csv.writer(open("rst/rst_prediction.csv","w"))
+    for rst in rsts:
+        w.writerow(rst)
 
     np.savez(sys.argv[7], scores=rsts)

@@ -94,3 +94,5 @@ ENV/
 *.txt
 *.csv
 *.npz
+*.pkl
+model/

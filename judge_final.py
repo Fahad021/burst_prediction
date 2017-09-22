@@ -35,12 +35,14 @@ def get_dates(filename):
     return days
 
 pid_list = [118, 6921, 372, 661, 62, 107, 42, 76, 27, 
-            24993, 60, 263, 102, 365, 13, 6949, 75, 46, 
-            319, 238, 352, 207, 753, 30, 230, 0, 6, 126, 
-            15, 237, 11, 20, 59, 108, 78, 196, 24994, 97, 
-            10, 8, 104, 105, 385, 440, 61, 5, 135, 4, 438, 
-            84, 173, 148, 98, 33, 79, 132, 20482, 119, 28, 
-            2923, 377, 161, 6913, 9] # 64, threshold:100
+            24993, 60, 263, 102, 
+            #365, 13, 6949, 75, 46, 
+            #319, 238, 352, 207, 753, 30, 230, 0, 6, 126, 
+            #15, 237, 11, 20, 59, 108, 78, 196, 24994, 97, 
+            #10, 8, 104, 105, 385, 440, 61, 5, 135, 4, 438, 
+            #84, 173, 148, 98, 33, 79, 132, 20482, 119, 28, 
+            #2923, 377, 161, 6913, 9
+            ] # 64, threshold:100
 
 def task(argv, id_, fid):
     seq_len = 30
@@ -58,34 +60,37 @@ def task(argv, id_, fid):
              bursts_info, burst_series, non_burst_series)
     print fid, "train/test size: ", len(S_train), len(S_test)
 
+    inputs = []
+    for s in S_train[:500]:
+        inputs += s.tolist()
+    
     # make predictions
     new_S = []
     msq_set = [] # mean square errors, (lstm_error, our_error) pair
-    for series in S_test:
-        predictions = []
+    predictions = []
+    for series in S_test[:20]:
         ori_p = len(series)
+        #print "period", ori_p
         if ori_p <= seq_len:
             continue
         seq = series[0:seq_len]
 
         # arima
         try:
-            model = ARIMA(seq, order=(3,2,0))
-            model_fit = model.fit(disp=0)
-            output = model_fit.predict(seq_len, ori_p, dynamic=True)
+            arma = sm.tsa.ARMA(inputs+list(seq), (2,1)).fit()
+            output = arma.predict(len(inputs)+seq_len, len(inputs)+ori_p, dynamic=True)
             output = output[1:]
         except:
-            output = [np.average(seq)] * (ori_p - seq_len)
+            output = [np.mean(seq)] * (ori_p - seq_len)
+            print "error"
 
         predictions.append(output)
 
-        msq = 0
-        for i in range(len(predictions)):
-            msq = mean_squared_error(series[seq_len:], predictions[i])
+        msq = mean_squared_error(series[seq_len:], output)
         msq_set.append(msq)
-        print msq
+        #print msq
 
-    return msq_set
+    return msq_set,predictions
 
 if __name__ == "__main__":
     if len(sys.argv) != 8:
@@ -94,9 +99,11 @@ if __name__ == "__main__":
 
 
     rsts = []
+    rsts2 = []
 
     for fid, id_ in enumerate(pid_list):
-        scores = task(sys.argv, id_, fid)
+        scores, pred = task(sys.argv, id_, fid)
         rsts.append(scores)
+        rsts2.append(pred)
 
-    np.savez(sys.argv[7], scores=rsts)
+    np.savez(sys.argv[7], scores=rsts, pred=rsts2)

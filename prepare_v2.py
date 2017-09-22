@@ -11,7 +11,7 @@ import csv
 import random
 
 
-size = 30000 # tag
+size = 10000 # tag
 def get_category_bursts(file1, file2, file3, file4, pid, seq_len):
     """
     get all bursts in the category of predicting series

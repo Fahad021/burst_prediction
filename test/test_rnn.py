@@ -19,10 +19,14 @@ def get_dates(filename):
     # print days[:5]
 
     return days
+
+
 # convert an array of values into a dataset matrix
-
-
 def create_dataset(dataset, look_back=1):
+    """
+    dataX: a list of sequences [t-look_back,t]
+    dataY: a list of next time value t+1
+    """
     dataX, dataY = [], []
     for i in range(len(dataset) - look_back - 1):
         a = dataset[i:(i + look_back), 0]
@@ -34,7 +38,7 @@ def create_dataset(dataset, look_back=1):
 np.random.seed(7)
 # load the dataset
 dataframe = pandas.read_csv(sys.argv[1], header=None)
-dataframe = pandas.DataFrame({"numbers": np.array(dataframe.iloc[0])})
+dataframe = pandas.DataFrame({"numbers": np.array(dataframe.iloc[1])})
 # print dataframe
 # numbers = np.array(df.iloc[0])
 # print numbers.shape
@@ -48,16 +52,22 @@ dataset = dataset.astype('float32')
 scaler = MinMaxScaler(feature_range=(0, 1))
 dataset = scaler.fit_transform(dataset)
 # split into train and test sets
-train_size = int(len(dataset) * 0.5)
+train_size = int(len(dataset) * 0.3)
 test_size = len(dataset) - train_size
 train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
 # reshape into X=t and Y=t+1
 look_back = 15
 trainX, trainY = create_dataset(train, look_back)
 testX, testY = create_dataset(test, look_back)
+
 # reshape input to be [samples, time steps, features]
 trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+# another way:
+# reshape input to be [samples, time steps, features]
+# trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], 1))
+# testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], 1))
+
 # create and fit the LSTM network
 model = Sequential()
 model.add(LSTM(4, input_dim=look_back))

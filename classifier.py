@@ -15,7 +15,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 
-n_feature = 15
+n_feature = 19
 
 def get_features(seq):
     """
@@ -33,9 +33,9 @@ def get_features(seq):
     # min value
     features['max'] = s_max
     # max value
-    # features['id_min'] = np.argmin(seq)
+    features['id_min'] = np.argmin(seq)
     # min value
-    # features['id_max'] = np.argmax(seq)
+    features['id_max'] = np.argmax(seq)
     # mean value
     features['mean_value'] = np.mean(seq)
     # std value
@@ -63,10 +63,10 @@ def get_features(seq):
     # minimum value of the first-order derivative
     features['min_fod'] = min(tmp_l)
     # maximum point of the first-order derivative
-    # tmp_l = [seq[i+1] - seq[i] for i in range(end)]
-    # features['max_fod_point'] = np.argmax(tmp_l)
+    tmp_l = [seq[i+1] - seq[i] for i in range(end)]
+    features['max_fod_point'] = np.argmax(tmp_l)
     # minimum point of the first-order derivative
-    # features['min_fod_point'] = np.argmin(tmp_l)
+    features['min_fod_point'] = np.argmin(tmp_l)
     # d-value between positive and negative first-order derivative
     tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(end)]
     features['d_pfod_nfod'] = tmp_l.count(1) - tmp_l.count(0)
@@ -88,10 +88,12 @@ def prepare_svm_input(pos_samples, neg_samples):
         X[i] = get_features(pos_seq)
         y[i] = 1
         i += 1
+        print i
     for neg_seq in neg_samples:
         X[i] = get_features(neg_seq)
         y[i] = 2
         i += 1
+        print i
 
     return X, y
 
@@ -138,11 +140,11 @@ def build_clf_model(X, y, model="gaussian"):
     if model == "neighbor":
         clf = KNeighborsClassifier(2)
     elif model == "decision":
-        clf = DecisionTreeClassifier(max_depth=10)
+        clf = DecisionTreeClassifier(max_depth=5)
     elif model == "adaboost":
         clf = AdaBoostClassifier()
     elif model == "randomforest":
-        clf = RandomForestClassifier(max_depth=10, n_estimators=10)
+        clf = RandomForestClassifier(max_depth=5, n_estimators=10)
     else:
         clf = GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True) # classify
 

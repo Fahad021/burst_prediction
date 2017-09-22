@@ -104,11 +104,11 @@ def prepare_period_prediction_input(seqs, peaks):
 n_size = 10000
 def build_prediction_model(X, y, type_="linearsvr"):
     start = int(time.time())
+    X = X[:n_size,:]
+    y = y[:n_size]
 
     if type_ == "svr":
         model = svm.SVR() # SVR regression
-        X = X[:n_size,:]
-        y = y[:n_size]
     elif type_ == "linear":
         model = linear_model.LinearRegression() # linear regression
     elif type_ == "bayes":
@@ -137,11 +137,11 @@ def prepare_end_value_prediction_input(seqs, periods, st_values, peaks):
 
 def build_end_value_prediction_model(X, y, type_="linearsvr"):
     start = int(time.time())
+    X = X[:n_size,:]
+    y = y[:n_size]
 
     if type_ == "svr":
         model = svm.SVR() # SVR regression
-        X = X[:n_size,:]
-        y = y[:n_size]
     elif type_ == "linear":
         model = linear_model.LinearRegression() # linear regression
     elif type_ == "bayes":

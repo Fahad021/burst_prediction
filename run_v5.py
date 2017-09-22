@@ -32,17 +32,27 @@ def get_dates(filename):
 
     return days
 
-pid_list = [118, 6921, 372, 661, 62, 107, 42, 76, 27, 
-            24993, 60, 263, 102, 365, 13, 6949, 75, 46, 
+pid_list = [118, 
+            6921, 372,
+            661, #fid=3
+            62, 107, 42, 76, 27, 24993, 60,
+            263,
+            102, 365, 13, 6949, 75, 46, 
             319, 238, 352, 207, 753, 30, 230, 0, 6, 126, 
             15, 237, 11, 20, 59, 108, 78, 196, 24994, 97, 
             10, 8, 104, 105, 385, 440, 61, 5, 135, 4, 438, 
             84, 173, 148, 98, 33, 79, 132, 20482, 119, 28, 
-            2923, 377, 161, 6913, 9] # 64, threshold:100
+            2923, 377, 161, 6913, 9
+            ] # 64, threshold:100
 
 def task(argv, id_, fid, alpha, beta, delta, epochs=100):
+    print fid
     seq_len = 30
-    
+ 
+    if os.path.exists("rst/id%d" % fid):
+        ff = np.load("rst/id%d/rst.npz"%fid)
+        return ff["scores"], ff["msq"]
+
     # load data
     print fid, "load data"
     bursts_info, burst_series, non_burst_series = get_category_bursts(argv[1], 
@@ -75,7 +85,7 @@ def task(argv, id_, fid, alpha, beta, delta, epochs=100):
 
     # avg peak and period and ed value
     avg_peak = np.mean(t_data_p_v[-1])
-    avg_period = np.mean(t_data_p_t[-1])
+    avg_period = int(np.mean(t_data_p_t[-1]))
     avg_ed = np.mean(t_data_e_v[-1])
     print fid, "avg: ", avg_peak, avg_period, avg_ed
 
@@ -187,46 +197,50 @@ def task(argv, id_, fid, alpha, beta, delta, epochs=100):
     new_S = []
     msq_set = [] # mean square errors, (lstm_error, our_error) pair
     for series in S_test:
-        ori_p = len(series)
-        if ori_p <= seq_len:
+        try:
+            ori_p = len(series)
+            if ori_p <= seq_len:
+                continue
+            seq = series[0:seq_len].tolist()
+            lstm_pred = np.empty_like(series[seq_len:])
+            
+            # lstm recurrent prediction
+            for i in range(len(series)-seq_len):
+                lstm_pred[i] = lstm_model.predict(np.reshape(seq,(1,1,seq_len)))
+                seq[0:seq_len-1] = seq[1:seq_len]
+                seq[-1] = lstm_pred[i]
+
+            # our prediction
+            seq = series[0:seq_len].tolist() # reset seq
+            peak = predict_burst_value(v_pdt, seq)
+            if peak <= 0.0 or abs(avg_peak - peak) > 4*alpha:
+                peak = avg_peak
+            print fid, "peak, pred_peak: ", np.amax(series), peak
+            period = predict_burst_period(t_pdt, peak, seq)
+            if period <= 0.0 or abs(avg_period - period) > 4*beta:
+                period = avg_period
+            print fid, "period, pred_period: ", ori_p, period
+            ed_value = predict_end_value(e_pdt, seq, period, peak)
+            if ed_value <= -seq[0]:
+                ed_value = seq[0]
+            elif abs(avg_ed - ed_value) > 4*delta:
+                ed_value = avg_ed
+            print fid, "ed_value, pred_ed_value: ", series[-1], ed_value
+            new_seq, st, ed, last_p, start = reshape_orginal_seq(seq, period)
+
+            reshaped_rst = knn_prediction(ap_model, t_data_r, new_seq, period, peak, ed_value, st, ed)
+            if reshaped_rst is None:
+                continue
+            new_burst = stretch_burst(reshaped_rst[0], period, seq[0])
+
+            if period > ori_p:
+                our_pred = new_burst[seq_len:ori_p]
+            else:
+                our_pred = np.zeros(ori_p-seq_len)
+                our_pred[:period-seq_len] = new_burst[seq_len:]
+        except Exception,e:
+            print Exception,":",e
             continue
-        seq = series[0:seq_len]
-        lstm_pred = np.empty_like(series[seq_len:])
-        
-        # lstm recurrent prediction
-        for i in range(len(series)-seq_len):
-            lstm_pred[i] = lstm_model.predict(np.reshape(seq,(1,1,seq_len)))
-            seq[0:seq_len-1] = seq[1:seq_len]
-            seq[-1] = lstm_pred[i]
-
-        # our prediction
-        seq = series[0:seq_len] # reset seq
-        peak = predict_burst_value(v_pdt, seq)
-        if peak <= 0.0 or abs(avg_peak - peak) > 4*alpha:
-            peak = avg_peak
-        print fid, "peak, pred_peak: ", np.amax(series), peak
-        period = predict_burst_period(t_pdt, peak, seq)
-        if period <= 0.0 or abs(avg_period - period) > 4*beta:
-            period = avg_period
-        print fid, "period, pred_period: ", ori_p, period
-        ed_value = predict_end_value(e_pdt, seq, period, peak)
-        if ed_value <= -seq[0]:
-            ed_value = seq[0]
-        elif abs(avg_ed - ed_value) > 4*delta:
-            ed_value = avg_ed
-        print fid, "ed_value, pred_ed_value: ", series[-1], ed_value
-        new_seq, st, ed, last_p, start = reshape_orginal_seq(seq, period)
-
-        reshaped_rst = knn_prediction(ap_model, t_data_r, new_seq, period, peak, ed_value, st, ed)
-        if reshaped_rst is None:
-            continue
-        new_burst = stretch_burst(reshaped_rst[0], period, seq[0])
-
-        if period > ori_p:
-            our_pred = new_burst[seq_len:ori_p]
-        else:
-            our_pred = np.zeros(ori_p-seq_len)
-            our_pred[:period-seq_len] = new_burst[seq_len:]
 
         msq = np.zeros(2)
         msq[0] = mean_squared_error(series[seq_len:], lstm_pred)
@@ -236,6 +250,7 @@ def task(argv, id_, fid, alpha, beta, delta, epochs=100):
         lstm_predictions.append(lstm_pred)
         our_predictions.append(our_pred)
         new_S.append(series)
+
     # invert predictions
     # dataset, new_pre = inverse_data(scaler, [dataset, [new_pre]])
     overall_msq = np.mean(np.array(msq_set), axis=0)
@@ -266,10 +281,10 @@ if __name__ == "__main__":
     beta = 10 # period
     delta = 0.8 # end_value
 
-    numbers = min(multiprocessing.cpu_count()/4, 8)
+    numbers = 8
     pool = multiprocessing.Pool(numbers)
     for fid, id_ in enumerate(pid_list):
-        rst = pool.apply_async(task, args=(sys.argv, id_, fid, alpha, beta, delta, 50))
+        rst = pool.apply_async(task, args=(sys.argv, id_, fid, alpha, beta, delta, 10))
         rsts.append(rst)
 
     pool.close()
