@@ -8,12 +8,9 @@ import sys
 
 
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True, 
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-    # print type(days)
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 
 def plot_results(date_file, dataset, seq_len, new_pred, predicted_data):

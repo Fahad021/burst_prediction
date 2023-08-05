@@ -8,12 +8,9 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True, 
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 rnn_file = np.load(sys.argv[1])
 arma_file = np.load(sys.argv[2])

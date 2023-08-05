@@ -31,16 +31,10 @@ def get_features(seq):
     like cateogory sales, product info, etc.
     """
     end = len(seq) - 1
-    features = dict()
     s_max = np.amax(seq)
     s_min = np.amin(seq)
 
-    # max value
-    features['min'] = s_min
-    # min value
-    features['max'] = s_max
-    # mean value
-    features['mean_value'] = np.mean(seq)
+    features = {'min': s_min, 'max': s_max, 'mean_value': np.mean(seq)}
     # std value
     features['std_value'] = np.std(seq)
     # d-value between the last minute and the first
@@ -52,10 +46,14 @@ def get_features(seq):
     # d-value between the max and the min
     features['d_max_min'] = s_max - s_min
     # mean value of the absolute first-order derivative
-    e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+    e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
     features['e_fod'] = e_fod
     # standard deviation of the absolute first-order derivative
-    features['std_fod'] = np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)]))
+    features['std_fod'] = np.sqrt(
+        1
+        / float(end + 1)
+        * sum(np.square(abs(seq[i + 1] - seq[i]) - e_fod) for i in range(end))
+    )
     # last value of the first-order derivative
     features['last_fod'] = seq[end] - seq[end-1]
     # first value of the first-order derivative
@@ -85,20 +83,23 @@ def get_features_by_history(seq, has_burst):
     if end == -1:
         return [0.0] * 10
 
-    features = dict()
     s_max = np.amax(seq)
     s_min = np.amin(seq)
 
-    features["mean"] = np.mean(seq)
+    features = {"mean": np.mean(seq)}
     features["std"] = np.std(seq)
     features["has_burst"] = 1 if has_burst else 0
     features["id_max"] = np.argmax(seq)
     features["id_min"] = np.argmin(seq)
     features['d_last_first'] = seq[-1] - seq[0]
     features['d_last_max'] = seq[end] - s_max
-    e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+    e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
     features['e_fod'] = e_fod
-    features['std_fod'] = np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)]))
+    features['std_fod'] = np.sqrt(
+        1
+        / float(end + 1)
+        * sum(np.square(abs(seq[i + 1] - seq[i]) - e_fod) for i in range(end))
+    )
     tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(-1)]
     features['d_pfod_nfod'] = tmp_l.count(1) - tmp_l.count(0)
 
@@ -108,19 +109,16 @@ def get_features_by_history(seq, has_burst):
 def get_polf_features(seq):
     # polf transform
     polf = PolynomialFeatures(polf_size)
-    rst = polf.fit_transform(seq)
-    return rst
+    return polf.fit_transform(seq)
 
 
 def prepare_prediction_input(seqs, features):
-    i = 0
     n_X = len(seqs)
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f], dtype=float)
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq) #here have some error
         X[i,n_feature:n_f] = features[i]
-        i += 1
     return X
 
 
@@ -128,13 +126,10 @@ def prepare_period_prediction_input(seqs, peaks, features):
     n_X = len(seqs)
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f+1], dtype=float)
-    i = 0
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+1] = [peaks[i]]
-        i += 1
-
     return X
 
 
@@ -142,13 +137,10 @@ def prepare_end_value_prediction_input(seqs, periods, st_values, peaks, features
     n_X = len(seqs)
     n_f = n_feature + len(features[0])
     X = np.empty([n_X, n_f+3], dtype=float)
-    i = 0
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i,0:n_feature] = get_features(seq)# + get_polf_features(seq)
         X[i,n_feature:n_f] = features[i]
         X[i,n_f:n_f+3] = [periods[i], st_values[i], peaks[i]]
-        i += 1
-
     return X
 
 
@@ -288,8 +280,8 @@ def reshape_orginal_seq(seq, burst_period, time_step=0):
     st_point = -1
     ed_point = -1
     seq_last_point = -1
-    if burst_period % length == 0:
-        for i in range(length):
+    for i in range(length):
+        if burst_period % length == 0:
             if i * t >= start + len(seq):
                 # out of the seq boundary
                 ed_point = i - 1
@@ -299,8 +291,7 @@ def reshape_orginal_seq(seq, burst_period, time_step=0):
                 if st_point < 0:
                     st_point = i
                 seq_last_point = i * int(t) - start
-    else:
-        for i in range(length):
+        else:
             if i * t + 1 >= start + len(seq):
                 # out of the seq boundary
                 ed_point = i - 1

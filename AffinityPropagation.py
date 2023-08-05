@@ -138,7 +138,7 @@ def affinity_propagation(S, preference=None, convergence_iter=15, max_iter=200,
     n_samples = S.shape[0]
 
     if S.shape[0] != S.shape[1]:
-        raise ValueError("S must be a square array (shape=%s)" % repr(S.shape))
+        raise ValueError(f"S must be a square array (shape={repr(S.shape)})")
 
     if preference is None:
         preference = np.median(S)

@@ -65,14 +65,23 @@ def get_features_2(seqs):
         # index of the min point
         features['id_min'].append(np.argmin(seq))
         # mean value of the absolute first-order derivative
-        e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+        e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
         features['e_fod'].append(e_fod)
         # standard deviation of the absolute first-order derivative
-        features['std_fod'].append(np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)])))
+        features['std_fod'].append(
+            np.sqrt(
+                1
+                / float(end + 1)
+                * sum(
+                    np.square(abs(seq[i + 1] - seq[i]) - e_fod)
+                    for i in range(end)
+                )
+            )
+        )
         # last value of the first-order derivative
         features['last_fod'].append(seq[end] - seq[end-1])
         # maximum value of the first-order derivative
-        max_fod = max([abs(seq[i+1] - seq[i]) for i in range(end)])
+        max_fod = max(abs(seq[i+1] - seq[i]) for i in range(end))
         features['max_fod'].append(max_fod)
         # d-value between positive and negative first-order derivative
         tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(end)]

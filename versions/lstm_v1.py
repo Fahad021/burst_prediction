@@ -20,12 +20,9 @@ from sklearn.metrics import mean_squared_error
 
 # get dates
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True,
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, seq_len=1):
@@ -39,7 +36,7 @@ def create_dataset(dataset, seq_len=1):
 def create_dataset_v2(dataset, seq_len=1):
     windows = []
     windows_y = []
-    for i, sequence in enumerate(dataset):
+    for sequence in dataset:
         len_seq = len(sequence)
         for window_start in range(0, len_seq - seq_len -1):
             window_end = window_start + seq_len
@@ -113,9 +110,5 @@ def build_model(seq_len=1):
 
 # inverse tranform data
 def inverse_data(scaler, data_list):
-    new_list = []
-    for data in data_list:
-        new_list.append(scaler.inverse_transform(data))
-
-    return new_list
+    return [scaler.inverse_transform(data) for data in data_list]
 

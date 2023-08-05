@@ -26,12 +26,9 @@ from burst_refinement import *
 from prepare_v2 import *
 
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True, 
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 def handler(signum, frame):
     raise AssertionError

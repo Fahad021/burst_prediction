@@ -11,23 +11,15 @@ def l(x,v1,v2,k):
 
 
 def get_y(value, value2, k):
-    tmp = []
-    for i in range(k):
-        tmp.append(l(i,value,value2,k))
-    return tmp
+    return [l(i,value,value2,k) for i in range(k)]
 
 
 def get_alpha(k):
-    tmp = []
-    for i in range(k):
-        tmp.append(np.exp((-1/3)*i))
-    return tmp
+    return [np.exp((-1/3)*i) for i in range(k)]
 
 
 def decay_fit(f,g,a,k):
-    tmp = []
-    for i in range(k):
-        tmp.append(a[i]*f[i]+(1-a[i])*g[i])
+    tmp = [a[i]*f[i]+(1-a[i])*g[i] for i in range(k)]
     return tmp + list(g[k:])
 
 

@@ -24,8 +24,7 @@ def gaussian_multiply(g1, g2):
 
 
 def update(prior, likelihood):
-    posterior = gaussian_multiply(likelihood, prior)
-    return posterior
+    return gaussian_multiply(likelihood, prior)
 
 
 series_matrix = np.genfromtxt(sys.argv[1], delimiter=" ")
@@ -33,15 +32,14 @@ series_matrix = np.genfromtxt(sys.argv[1], delimiter=" ")
 
 smooth_series = np.ndarray(shape=(m, n-1), dtype=float)
 start_points = []
+voltage_std = 1.8
 for i in xrange(0, m):
     start_points.append(next((j for j, x in enumerate(series_matrix[i, 1:]) if int(x) > 0), None))
 
     zs = pd.ewma(series_matrix[i, 1:], span=14)
 
-    voltage_std = 1.8
-    process_var = .1**2
-
     x = (25, 1000) # initial state
+    process_var = .1**2
     process_model = (0., process_var)
 
     estimates = []
@@ -51,7 +49,7 @@ for i in xrange(0, m):
         x = update(prior, (z, voltage_std**2))
 
         estimates.append(x[0])
-        
+
     smooth_series[i] = estimates
 
 np.savetxt(sys.argv[2], smooth_series, delimiter=",")

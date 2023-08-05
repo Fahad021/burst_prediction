@@ -25,12 +25,9 @@ from prepare_v2 import *
 
 
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True, 
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 pid_list = [118, 
             6921, 372,

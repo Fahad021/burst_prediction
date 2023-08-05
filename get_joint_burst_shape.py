@@ -14,18 +14,12 @@ def get_category_pid(filename):
     # first number = line number = category id
     # following numbers are product id
     rd = csv.reader(open(filename, "r"), delimiter=",")
-    ids = [] # element: str
-    for row in rd:
-        ids.append(row[1:])
-    return ids
+    return [row[1:] for row in rd]
 
 
 def get_product_ids(filename):
     rd = csv.reader(open(filename, "r"), delimiter=",")
-    ids = [] # element: str
-    for row in rd:
-        ids.append(row[0])
-    return ids
+    return [row[0] for row in rd]
 
 
 def resample_series(series, start, end, sample_n):
@@ -36,14 +30,11 @@ def resample_series(series, start, end, sample_n):
     # print type(series)
     samples = []
     t = float(end - start) / sample_n # time interval to get sample, float
-    if (end - start) % sample_n == 0:
-        for i in range(sample_n):
+    for i in range(sample_n):
+        if (end - start) % sample_n == 0:
             samples.append(series[start + i * int(t)])
 
-    else:
-        # treat series k to series k+1 as a straight line
-        # get the corresponding value on the line
-        for i in range(sample_n):
+        else:
             k = int(start + i * t)
             sample = series[k] + (series[k+1] - series[k]) * (start + i * t - k)
             samples.append(sample)

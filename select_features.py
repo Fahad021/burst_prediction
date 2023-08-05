@@ -25,12 +25,9 @@ from prepare_v3 import *
 
 
 def get_dates(filename):
-    days = np.loadtxt(filename,
-                      unpack=True, 
-                      converters={0: mdates.strpdate2num('%Y%m%d')})
-    # print days[:5]
-
-    return days
+    return np.loadtxt(
+        filename, unpack=True, converters={0: mdates.strpdate2num('%Y%m%d')}
+    )
 
 
 if __name__ == "__main__":

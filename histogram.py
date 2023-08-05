@@ -8,9 +8,7 @@ import matplotlib.pyplot as plt
 r = csv.reader(open("p_data/dist.csv","r"))
 x = []
 for line in r:
-    l = []
-    for i in line:
-        l.append(float(i))
+    l = [float(i) for i in line]
     x.append(l)
 # the histogram of the data
 #n, bins, patches = plt.hist(x[0],bins=10, normed=1, facecolor='green')

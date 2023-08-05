@@ -16,10 +16,9 @@ def check_slope(arr, start, end, point, st_p):
     win_size = 30
     deviation = max(np.std(arr[start:end]), np.std(arr[st_p:]) / 2.0)
     angle = 0.5 * np.std(arr[st_p:]) / win_size
-    if (arr[point] - arr[start]) / (point - start) >= angle and arr[point] - arr[start] >= deviation:
-        return True
-    else:
-        return False
+    return (arr[point] - arr[start]) / (point - start) >= angle and arr[
+        point
+    ] - arr[start] >= deviation
 
 
 def combine_bursts(arr, top1, top2, start, end1, end2):
@@ -138,7 +137,7 @@ for i in xrange(0, m):
 
                 if check_sum % 2 == 1:
                     end = end2
-                if check_sum / 2 == 1:
+                if check_sum == 2:
                     top = local_max[j+1]
                 j += 1
 

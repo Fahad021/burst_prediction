@@ -14,11 +14,7 @@ import sys
 def get_product_info(filename):
 	# get info from 'product_sorted.txt'
 	reader = csv.reader(open(filename, "r"), delimiter="\t")
-	product = {}
-	for row in reader:
-	    product[row[0]] = [row[1], row[2], row[3], row[4]]
-
-	return product
+	return {row[0]: [row[1], row[2], row[3], row[4]] for row in reader}
 
 # load pid from 'product_sorted.txt'
 pid_array = [l[0] for l in csv.reader(open(sys.argv[1],"r"), delimiter="\t")]

@@ -30,20 +30,10 @@ def get_features(seq):
     like cateogory sales, product info, etc.
     """
     end = len(seq) - 1
-    features = dict()
     s_max = np.amax(seq)
     s_min = np.amin(seq)
 
-    # max value
-    features['min'] = s_min
-    # min value
-    features['max'] = s_max
-    # max value
-    # features['id_min'] = np.argmin(seq)
-    # min value
-    # features['id_max'] = np.argmax(seq)
-    # mean value
-    features['mean_value'] = np.mean(seq)
+    features = {'min': s_min, 'max': s_max, 'mean_value': np.mean(seq)}
     # std value
     features['std_value'] = np.std(seq)
     # d-value between the last minute and the first
@@ -55,10 +45,14 @@ def get_features(seq):
     # d-value between the max and the min
     features['d_max_min'] = s_max - s_min
     # mean value of the absolute first-order derivative
-    e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+    e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
     features['e_fod'] = e_fod
     # standard deviation of the absolute first-order derivative
-    features['std_fod'] = np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)]))
+    features['std_fod'] = np.sqrt(
+        1
+        / float(end + 1)
+        * sum(np.square(abs(seq[i + 1] - seq[i]) - e_fod) for i in range(end))
+    )
     # last value of the first-order derivative
     features['last_fod'] = seq[end] - seq[end-1]
     # first value of the first-order derivative
@@ -81,23 +75,18 @@ def get_features(seq):
 
 
 def prepare_prediction_input(seqs):
-    i = 0
     n_X = len(seqs)
     X = np.empty([n_X, n_feature], dtype=float)
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i] = get_features(seq)
-        i += 1
     return X
 
 
 def prepare_period_prediction_input(seqs, peaks):
     n_X = len(seqs)
     X = np.empty([n_X, n_feature], dtype=float)
-    i = 0
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i] = get_features(seq)#  + [peaks[i]]
-        i += 1
-
     return X
 
 
@@ -122,11 +111,8 @@ def build_prediction_model(X, y, type_="linearsvr"):
 def prepare_end_value_prediction_input(seqs, periods, st_values, peaks):
     n_X = len(seqs)
     X = np.empty([n_X, n_feature], dtype=float)
-    i = 0
-    for seq in seqs:
+    for i, seq in enumerate(seqs):
         X[i] = get_features(seq)# + [periods[i], st_values[i], peaks[i]]
-        i += 1
-
     return X
 
 
@@ -225,8 +211,8 @@ def reshape_orginal_seq(seq, burst_period, time_step=0):
     st_point = -1
     ed_point = -1
     seq_last_point = -1
-    if burst_period % length == 0:
-        for i in range(length):
+    for i in range(length):
+        if burst_period % length == 0:
             if i * t >= start + len(seq):
                 # out of the seq boundary
                 ed_point = i - 1
@@ -236,8 +222,7 @@ def reshape_orginal_seq(seq, burst_period, time_step=0):
                 if st_point < 0:
                     st_point = i
                 seq_last_point = i * int(t) - start
-    else:
-        for i in range(length):
+        else:
             if i * t + 1 >= start + len(seq):
                 # out of the seq boundary
                 ed_point = i - 1

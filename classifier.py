@@ -24,16 +24,10 @@ def get_features(seq):
     like cateogory sales, product info, etc.
     """
     end = len(seq) - 1
-    features = dict()
     s_max = np.amax(seq)
     s_min = np.amin(seq)
 
-    # max value
-    features['min'] = s_min
-    # min value
-    features['max'] = s_max
-    # max value
-    features['id_min'] = np.argmin(seq)
+    features = {'min': s_min, 'max': s_max, 'id_min': np.argmin(seq)}
     # min value
     features['id_max'] = np.argmax(seq)
     # mean value
@@ -49,10 +43,14 @@ def get_features(seq):
     # d-value between the max and the min
     features['d_max_min'] = s_max - s_min
     # mean value of the absolute first-order derivative
-    e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+    e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
     features['e_fod'] = e_fod
     # standard deviation of the absolute first-order derivative
-    features['std_fod'] = np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)]))
+    features['std_fod'] = np.sqrt(
+        1
+        / float(end + 1)
+        * sum(np.square(abs(seq[i + 1] - seq[i]) - e_fod) for i in range(end))
+    )
     # last value of the first-order derivative
     features['last_fod'] = seq[end] - seq[end-1]
     # first value of the first-order derivative

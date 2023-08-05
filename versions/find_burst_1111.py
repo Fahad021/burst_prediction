@@ -16,10 +16,9 @@ def check_slope(arr, start, end, point, st_p):
     win_size = 30
     deviation = max(np.std(arr[start:end]), np.std(arr[st_p:]) / 2.0)
     angle = 0.5 * np.std(arr[st_p:]) / win_size
-    if (arr[point] - arr[start]) / (point - start) >= angle and arr[point] - arr[start] >= deviation:
-        return True
-    else:
-        return False
+    return (arr[point] - arr[start]) / (point - start) >= angle and arr[
+        point
+    ] - arr[start] >= deviation
 
 
 # load data

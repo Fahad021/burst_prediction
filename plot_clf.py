@@ -18,7 +18,7 @@ fid_list = [0,1,2,3,4,5,6,7,10,11,12,13,
 
 scores = []
 for fid in range(len(fid_list)):
-    tmp = np.load("model/id" + str(fid) + "/scores.npz")["scores"][0]
+    tmp = np.load(f"model/id{str(fid)}/scores.npz")["scores"][0]
     scores.append(max(tmp))
 
 np.savez("rst/rst_our_clf.npz",scores=np.array(scores))

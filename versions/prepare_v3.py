@@ -19,20 +19,23 @@ def get_features_by_history(seq, has_burst):
     if end == -1:
         return [0.0] * 10
 
-    features = dict()
     s_max = np.amax(seq)
     s_min = np.amin(seq)
 
-    features["mean"] = np.mean(seq)
+    features = {"mean": np.mean(seq)}
     features["std"] = np.std(seq)
     features["has_burst"] = 1 if has_burst else 0
     features["id_max"] = np.argmax(seq)
     features["id_min"] = np.argmin(seq)
     features['d_last_first'] = seq[-1] - seq[0]
     features['d_last_max'] = seq[end] - s_max
-    e_fod = 1/float(end+1) * sum([abs(seq[i+1] - seq[i]) for i in range(end)])
+    e_fod = 1/float(end+1) * sum(abs(seq[i+1] - seq[i]) for i in range(end))
     features['e_fod'] = e_fod
-    features['std_fod'] = np.sqrt(1/float(end+1) * sum([np.square(abs(seq[i+1] - seq[i]) - e_fod) for i in range(end)]))
+    features['std_fod'] = np.sqrt(
+        1
+        / float(end + 1)
+        * sum(np.square(abs(seq[i + 1] - seq[i]) - e_fod) for i in range(end))
+    )
     tmp_l = [1 if seq[i+1] - seq[i] >= 0 else 0 for i in range(-1)]
     features['d_pfod_nfod'] = tmp_l.count(1) - tmp_l.count(0)
 
